@@ -46,8 +46,9 @@ hunter_add_package(nlohmann_json)
 find_package(nlohmann_json CONFIG REQUIRED)
 
 add_library(${PROJECT_NAME} STATIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/sources/http-client.cpp
-)
+        ${CMAKE_CURRENT_SOURCE_DIR}/sources/http_client.cpp
+        include/http_client.hpp)
+
 add_executable(demo
   ${CMAKE_CURRENT_SOURCE_DIR}/demo/main.cpp
 )

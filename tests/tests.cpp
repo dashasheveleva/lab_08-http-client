@@ -2,7 +2,6 @@
 
 #include <stdexcept>
 #include <gtest/gtest.h>
-#include <http_client.hpp>
 
 TEST(Example, EmptyTest) {
   EXPECT_TRUE(true);
