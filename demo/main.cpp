@@ -21,9 +21,6 @@ namespace net = boost::asio;        // from <boost/asio.hpp>
 using tcp = net::ip::tcp;           // from <boost/asio/ip/tcp.hpp>
 
 int main() {
-  //HTTP_Client client;
-  //client.create_req();
-  //client.start();
   try {
     std::string require;
     std::cout << "Input id" << std::endl;
