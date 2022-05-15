@@ -1,39 +1,50 @@
 // Copyright 2022 Shevelyova Darya photodoshfy@gmail.com
 
+// cd cmake-build-debug
+// ./demo
+
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
-#include <boost/asio/connect.hpp>
+#include <boost/beast/version.hpp>
 #include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/connect.hpp>
+#include <boost/config.hpp>
+#include <nlohmann/json.hpp>
 #include <cstdlib>
 #include <iostream>
 #include <string>
+using nlohmann::json;
 
 namespace beast = boost::beast;     // from <boost/beast.hpp>
 namespace http = beast::http;       // from <boost/beast/http.hpp>
 namespace net = boost::asio;        // from <boost/asio.hpp>
 using tcp = net::ip::tcp;           // from <boost/asio/ip/tcp.hpp>
 
-// Выполняет HTTP GET и печатает ответ
-int main(int argc, char** argv) {
+int main() {
+  //HTTP_Client client;
+  //client.create_req();
+  //client.start();
   try {
-    // Проверяем аргументы командной строки.
-    if(argc != 5) {
-      std::cerr << "Usage: http-client-sync <host> <port> <target> "
-                   "<request>\n"
-                << "Example:\n"
-                   "localhost 8080 /v1/api/suggest "
-                << R"({"input":"<user_input>"})"
-                   "\n" << argv[1] << " " << argv[2]
-                << " " << argv[3] << " " << argv[4];
-      return EXIT_FAILURE;
-    }
-    auto const host = argv[1];
-    auto const port = argv[2];
-    auto const target = argv[3];
-    auto const request = argv[4];
+    std::string require;
+    std::cout << "Input id" << std::endl;
+    std::string str = "";
+    std::cin >> str;
+    json r;
+    r["input"] = str;
+    std::stringstream ss;
+    ss << r;
+    require = ss.str();
+    //  require = "\"input\":" + str;
+    //  std::cout << require << std::endl;
+
+    auto const host = "127.0.0.1";
+    auto const port = "80";
+    auto const target = "/v1/api/suggest";
     int version = 11;
+
     std::cout << host << " " << port << " " << target
-              << " " <<  request << std::endl;
+              << " " <<  require << std::endl;
+
     // io_context требуется для всех операций ввода/вывода
     net::io_context ioc;
 
@@ -47,14 +58,12 @@ int main(int argc, char** argv) {
     // Устанавливаем соединение по IP-адресу, полученному из поиска
     stream.connect(results);
 
-    http::string_body::value_type body = request;
-
     // Настройка сообщения запроса HTTP GET
     http::request<http::string_body> req{http::verb::post, target, version};
-    req.set(http::field::host, host);
-    req.body() = body;
+    req.body() = require;
     req.prepare_payload();
-    req.set(http::field::content_type, "text/html");
+    req.set(http::field::host, host);
+    req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
     // Отправляем HTTP-запрос на удаленный хост
     http::write(stream, req);
 
